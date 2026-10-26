@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>House Price Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">⌂</span> Habitat<span class="brand-light">IQ</span></a>
+      <span class="status"><span class="status-dot"></span> ML prediction tool</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow"><span class="eyebrow-line"></span> REAL ESTATE ANALYTICS</div>
+        <h1>Estimate a home's<br><span>market value.</span></h1>
+        <p class="hero-copy">Enter the property and neighbourhood details below to get a machine-learning estimate from your trained regression model.</p>
+        <div class="hero-stats">
+          <div><strong>13</strong><span>Input features</span></div>
+          <div class="stat-divider"></div>
+          <div><strong>ML</strong><span>Linear regression</span></div>
+          <div class="stat-divider"></div>
+          <div><strong>Instant</strong><span>Prediction</span></div>
+        </div>
+      </section>
+
+      {% if load_error %}
+      <div class="setup-alert"><strong>Model files need attention.</strong> {{ load_error }} Add both <code>house_price_model.pkl</code> and <code>scaler.pkl</code> beside <code>app.py</code>, then restart the server.</div>
+      {% endif %}
+
+      <section class="workspace">
+        <form id="prediction-form" class="form-card">
+          <div class="card-heading">
+            <div>
+              <div class="section-kicker">PROPERTY PROFILE</div>
+              <h2>Enter property details</h2>
+            </div>
+            <span class="required-note">13 fields required</span>
+          </div>
+          <div class="field-grid">
+            {% for code, description, example in features %}
+            <label class="field" for="{{ code }}">
+              <span class="field-top"><span class="field-name">{{ code }}</span><span class="field-info" title="{{ description }}">i</span></span>
+              <span class="field-description">{{ description }}</span>
+              <input id="{{ code }}" name="{{ code }}" type="number" step="any" placeholder="{{ example }}" value="{{ example }}" required>
+            </label>
+            {% endfor %}
+          </div>
+          <div class="form-bottom">
+            <p><span class="info-symbol">i</span> Use values in the same units and order as the dataset used to train the model.</p>
+            <button id="predict-button" type="submit"><span>Predict house price</span><span class="button-arrow">↗</span></button>
+          </div>
+          <div id="error-message" class="error-message" role="alert" hidden></div>
+        </form>
+
+        <aside class="result-card" aria-live="polite">
+          <div class="result-top">
+            <span class="result-icon">⌂</span>
+            <span class="result-label">YOUR ESTIMATE</span>
+          </div>
+          <div id="result-placeholder" class="result-placeholder">
+            <div class="placeholder-art"><span>⌂</span><i></i><b></b></div>
+            <h3>Your prediction<br>will appear here.</h3>
+            <p>Fill in the property profile and run the model to see its estimated value.</p>
+          </div>
+          <div id="result-content" hidden>
+            <p class="result-caption">Estimated house price</p>
+            <div class="price-line"><span class="currency">$</span><strong id="price-dollars">—</strong></div>
+            <div class="price-secondary" id="price-thousands">—</div>
+            <div class="result-rule"></div>
+            <div class="result-detail"><span>Model</span><strong>Linear Regression</strong></div>
+            <div class="result-detail"><span>Features processed</span><strong>13 of 13</strong></div>
+            <div class="result-note">This is a model estimate, not a professional appraisal or current market quote.</div>
+          </div>
+          <div id="loading-state" class="loading-state" hidden><div class="spinner"></div><p>Analysing property details…</p></div>
+          <div class="result-footer"><span class="footer-dot"></span> Powered by your local Python model</div>
+        </aside>
+      </section>
+    </main>
+    <footer><span>HabitatIQ · House Price Predictor</span><span>Built with Flask, scikit-learn & JavaScript</span></footer>
+  </div>
+</body>
+</html>
